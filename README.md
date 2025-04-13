@@ -48,6 +48,8 @@ DELETE /admin/user/:id
 Soft delete a user (only marks them as deleted).
 
 
+YouTube Link : https://youtu.be/VHAv21wPyvc?si=8TfqUy3_J2p7E2eA
+
 
 
 
