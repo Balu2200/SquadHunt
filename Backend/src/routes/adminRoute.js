@@ -7,9 +7,12 @@ const Opportunity = require("../models/oppurtunity");
 
 adminRouter.get("/users", verifyToken, isAdmin, async (req, res) => {
   try {
-    const { role, page = 1, limit = 10 } = req.query;
+    const { role, name, email, page = 1, limit = 10 } = req.query;
     const query = { isDeleted: { $ne: true } };
+
     if (role) query.role = role;
+    if (name) query.name = { $regex: name, $options: "i" };
+    if (email) query.email = { $regex: email, $options: "i" };
 
     const total = await User.countDocuments(query);
     const users = await User.find(query)
@@ -31,7 +34,8 @@ adminRouter.get("/users", verifyToken, isAdmin, async (req, res) => {
 adminRouter.get("/opportunities", verifyToken, isAdmin, async (req, res) => {
   try {
     const { status, page = 1, limit = 10 } = req.query;
-    const query = {};
+    const query = { isDeleted: { $ne: true } };
+
     if (status) query.status = status;
 
     const total = await Opportunity.countDocuments(query);
@@ -48,6 +52,7 @@ adminRouter.get("/opportunities", verifyToken, isAdmin, async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
 
 adminRouter.delete("/user/:id", verifyToken, isAdmin, async (req, res) => {
   try {
@@ -74,13 +79,17 @@ adminRouter.patch(
       const { id } = req.params;
       const { status } = req.body;
 
-      const updated = await Opportunity.findByIdAndUpdate(
-        id,
+      const updated = await Opportunity.findOneAndUpdate(
+        { _id: id, isDeleted: { $ne: true } },
         { status },
         { new: true }
       );
+
       if (!updated)
-        return res.status(404).json({ message: "Opportunity not found" });
+        return res
+          .status(404)
+          .json({ message: "Opportunity not found or deleted" });
+
       res.json({ message: "Status updated", data: updated });
     } catch (err) {
       console.error("Error updating opportunity status:", err);

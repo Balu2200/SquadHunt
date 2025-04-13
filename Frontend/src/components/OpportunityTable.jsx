@@ -55,7 +55,7 @@ const OpportunityTable = ({
               <td className="px-4 py-2 border">
                 <button
                   onClick={() => handleStatusChange(opportunity._id, event)}
-                  className="bg-blue-500 text-white px-4 py-1 rounded"
+                  className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-700"
                 >
                   Update Status
                 </button>

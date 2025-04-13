@@ -11,26 +11,33 @@ authRouter.post("/signup", async (req, res) => {
   try {
     const data = validateSignUpData(req);
     const { firstName, lastName, email, password, adminCode } = data;
-    const passwordhash = await bcrypt.hash(password, 10);
+    const passwordHash = await bcrypt.hash(password, 10);
 
-    let role = "user";
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "Email already in use" });
+    }
+
+    let role = "player";
     if (adminCode === process.env.ADMIN_SIGNUP_CODE) {
       role = "admin";
+    } else if (adminCode === process.env.ORGANIZER_SIGNUP_CODE) {
+      role = "organizer";
     }
 
     const user = new User({
       firstName,
       lastName,
       email,
-      password: passwordhash,
+      password: passwordHash,
       role,
     });
 
     await user.save();
-    return res.status(200).send("User Created Successfully");
+    return res.status(201).json({ message: "User created successfully" });
   } catch (err) {
-    console.error("Error Detected:", err.message);
-    return res.status(500).send("Error:" + err.message);
+    console.error("Signup Error:", err.message);
+    return res.status(500).json({ message: err.message || "Server error" });
   }
 });
 
@@ -45,7 +52,7 @@ authRouter.post("/login", async (req, res) => {
         .json({ message: "Email and password are required." });
     }
 
-    const user = await User.findOne({ email }).select("+password"); // Corrected to User
+    const user = await User.findOne({ email }).select("+password"); 
     if (!user || !(await user.validatePassword(password))) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
@@ -67,7 +74,6 @@ authRouter.post("/login", async (req, res) => {
     res.status(500).json({ message: "Server error: " + err.message });
   }
 });
-
 
 
 authRouter.post("/logout", async (req, res) => {

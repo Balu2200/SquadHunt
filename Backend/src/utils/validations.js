@@ -3,6 +3,8 @@ const bcrypt = require("bcrypt");
 
 const validateSignUpData = (req) => {
   const { firstName, lastName, email, password, adminCode } = req.body;
+  console.log("Received data for validation:", req.body);
+
   if (firstName === "" || lastName === "") {
     throw new Error("Name is not valid");
   } else if (!validator.isEmail(email)) {
@@ -10,6 +12,8 @@ const validateSignUpData = (req) => {
   } else if (!validator.isStrongPassword(password)) {
     throw new Error("Please enter strong password");
   }
+
   return { firstName, lastName, email, password, adminCode };
 };
+
 module.exports = { validateSignUpData };

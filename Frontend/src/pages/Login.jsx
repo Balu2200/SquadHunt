@@ -1,28 +1,40 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../services/api"; 
+import api from "../services/api";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null); 
+    setError(null);
+    setLoading(true);
 
     try {
       const response = await api.post("/auth/login", { email, password });
-      localStorage.setItem("token", response.data.token);
-      navigate("/dashboard");
+      if (response.data.role !== "admin") {
+        setError("Only admins can access this.");
+      } else {
+        localStorage.setItem("token", response.data.token);
+        navigate("/dashboard/users");
+      }
     } catch (err) {
       if (err.response?.status === 403) {
         setError("Access denied. Admins only.");
       } else {
         setError("Invalid credentials or server error.");
       }
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleSignupRedirect = () => {
+    navigate("/signup");
   };
 
   return (
@@ -52,11 +64,18 @@ const LoginPage = () => {
         </div>
         <button
           type="submit"
-          className="w-full bg-blue-500 text-white py-2 rounded"
+          className="w-full bg-blue-500 text-white py-2 rounded mb-4"
+          disabled={loading}
         >
-          Login
+          {loading ? "Logging in..." : "Login"}
         </button>
       </form>
+      <div className="text-center">
+        <p>Don't have an account?</p>
+        <button onClick={handleSignupRedirect} className="text-blue-500 mt-2">
+          Sign Up
+        </button>
+      </div>
     </div>
   );
 };
