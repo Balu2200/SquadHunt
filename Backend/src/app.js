@@ -18,8 +18,10 @@ app.use(express.json());
 app.use(cookieParser());
 
 const adminRouter = require("./routes/adminRoute");
+const authRouter = require("./routes/authRoute");
 const { verifyToken, isAdmin } = require("./middleware/adminMiddleware");
 
+app.use("/auth", authRouter);
 app.use("/admin", verifyToken, isAdmin, adminRouter);
 
 app.use((err, req, res, next) => {
@@ -27,7 +29,7 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: "Something went wrong on the server." });
 });
 
-const port = process.env.SERVER_PORT || 3000;
+const port = process.env.PORT || 3000;
 connectDb()
   .then(() => {
     console.log("Database Connected");

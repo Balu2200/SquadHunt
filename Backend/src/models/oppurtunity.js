@@ -8,7 +8,7 @@ const opportunitySchema = new mongoose.Schema({
     enum: ["pending", "approved", "closed"],
     default: "pending",
   },
-  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
+  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "users" },
 });
 
-module.exports = mongoose.model("Opportunity", opportunitySchema);
+module.exports = mongoose.model("opportunities", opportunitySchema);

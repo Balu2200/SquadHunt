@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../services/api";
+import api from "../services/api"; 
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -10,12 +10,18 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null); 
+
     try {
-      const response = await api.post("/login", { email, password });
+      const response = await api.post("/auth/login", { email, password });
       localStorage.setItem("token", response.data.token);
       navigate("/dashboard");
     } catch (err) {
-      setError("Invalid credentials");
+      if (err.response?.status === 403) {
+        setError("Access denied. Admins only.");
+      } else {
+        setError("Invalid credentials or server error.");
+      }
     }
   };
 

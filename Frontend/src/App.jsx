@@ -1,16 +1,18 @@
-import React from "react";
-import { Route, Routes } from "react-router-dom";
-import Dashboard from "./pages/Dashboard";
+import { Routes, Route } from "react-router-dom";
 import LoginPage from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
+import UserManagementPage from "./pages/UserManagementPage";
+import OpportunityManagementPage from "./pages/OpportunityManagementPage";
 
 function App() {
   return (
-    <div className="App">
-      <Routes>
-        <Route path="/" element={<LoginPage />} />
-        <Route path="/dashboard/*" element={<Dashboard />} />
-      </Routes>
-    </div>
+    <Routes>
+      <Route path="/" element={<LoginPage />} />
+      <Route path="/dashboard" element={<Dashboard />}>
+        <Route path="users" element={<UserManagementPage />} />
+        <Route path="opportunities" element={<OpportunityManagementPage />} />
+      </Route>
+    </Routes>
   );
 }
 
