@@ -57,17 +57,21 @@ adminRouter.get("/opportunities", verifyToken, isAdmin, async (req, res) => {
 adminRouter.delete("/user/:id", verifyToken, isAdmin, async (req, res) => {
   try {
     const { id } = req.params;
+    if (!id) return res.status(400).json({ message: "User ID is required" });
     const user = await User.findByIdAndUpdate(id, {
       isDeleted: true,
       deletedAt: new Date(),
     });
+
     if (!user) return res.status(404).json({ message: "User not found" });
+
     res.json({ message: "User soft-deleted" });
   } catch (err) {
     console.error("Error deleting user:", err);
     res.status(500).json({ message: "Server error" });
   }
 });
+
 
 
 adminRouter.patch(

@@ -17,7 +17,7 @@ const UsersPage = () => {
     setError("");
     const params = {
       page,
-      limit: 10, 
+      limit: 10,
       ...(roleFilter && { role: roleFilter }),
       ...(search && { name: search }),
     };
@@ -44,16 +44,18 @@ const UsersPage = () => {
     if (!confirmDelete) return;
 
     try {
+      console.log("Deleting user with ID:", id); 
       await api.delete(`/admin/user/${id}`);
-      fetchUsers();
+      fetchUsers(); 
     } catch (err) {
       alert("Error deleting user. Please try again.");
+      console.error("Error deleting user:", err); 
     }
   };
 
   const handleSearchKeyDown = (e) => {
     if (e.key === "Enter") {
-      setPage(1); 
+      setPage(1);
       fetchUsers();
     }
   };
@@ -97,7 +99,7 @@ const UsersPage = () => {
       {!isLoading && !error && users.length > 0 && (
         <UserTable
           users={users}
-          onDelete={handleDelete}
+          onDelete={handleDelete} 
           isLoading={isLoading}
           error={error}
         />
